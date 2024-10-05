@@ -23,6 +23,10 @@ function setCellLevel(x, y, level) {
 }
 
 function clearCells() {
+    for (let i = 0; i < 7; i++) {
+        setCellLevel(52, i, 0)
+    }
+
     for (let i = 0; i < 39; i++) {
         for (let j = 0; j < 52; j++) {
             setCellLevel(j, i, 0)
