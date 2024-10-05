@@ -43,14 +43,42 @@ function advanceFrame() {
             setCellLevel(x, y, i)
         }
     }
-    if (frame_num >= frame_count) {
+    if (frame_num >= data.length) {
         frame_num = 0
         clearCells()
-        clearInterval(interval)
+        // clearInterval(interval)
     }
 }
 
-data = // TODO: change to fecth from github
+async function fetchAndDecompressGzip(url) {
+    const response = await fetch(url)
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const decompressedStream = response.body.pipeThrough(new DecompressionStream('gzip'))
+
+    const reader = decompressedStream.getReader()
+    const chunks = []
+
+    let result;
+    while (!(result = await reader.read()).done) {
+        chunks.push(result.value)
+    }
+
+    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0)
+    const combined = new Uint8Array(totalLength)
+    let offset = 0
+    for (let chunk of chunks) {
+        combined.set(chunk, offset)
+        offset += chunk.length
+    }
+
+    return new TextDecoder().decode(combined)
+}
+
+url = 'https://github.com/bendy1234/Bad-Apple/raw/refs/heads/main/data.gz'
+data = JSON.parse(await fetchAndDecompressGzip(url))
 
 
 // should just be 7
@@ -59,7 +87,6 @@ for (let i = current_rows; i < 39; i++) {
     addRow(i)
 }
 frame_num = 0
-frame_count = data.length
-console.log(`estmated ${frame_count / 30}s long`)
+
 clearCells()
 interval = setInterval(advanceFrame, 1000 / 30)
