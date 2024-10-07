@@ -47,11 +47,14 @@ function advanceFrame() {
             setCellLevel(x, y, i)
         }
     }
-    if (frame_num >= data.length) {
-        frame_num = 0
-        clearCells()
-        // clearInterval(interval)
+    return frame_num >= data.length
+}
+
+function play(start_time) {
+    if (advanceFrame()){
+      return
     }
+    setTimeout(play, delay - (Date.now() - start_time), start_time + delay)
 }
 
 async function fetchAndDecompressGzip(url) {
@@ -91,6 +94,7 @@ for (let i = current_rows; i < 39; i++) {
     addRow(i)
 }
 frame_num = 0
+delay = 1000/30
 
 clearCells()
-interval = setInterval(advanceFrame, 1000 / 30)
+play(Date.now())
