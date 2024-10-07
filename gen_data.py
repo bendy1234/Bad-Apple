@@ -35,7 +35,7 @@ def convert(data):
         data = {}
         out.append(data)
         for (i, color) in frame:
-            data[color] = data.get(color, []) + [i]
+            data[int(color)] = data.get(int(color), []) + [int(i)]
     
     return out
 
@@ -51,7 +51,7 @@ def main(video_path):
     cap.release()
 
     with open("data.gz", "wb") as f:
-        f.write(serialize(data))
+        f.write(serialize(convert(data)))
 
 if __name__ == "__main__":
     main("bad_apple.mp4")
